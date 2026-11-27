@@ -180,16 +180,34 @@ GAME_INGREDIENTS = [
     "milk", "rice", "chicken", "potato",
 ]
 
-# Secret 3-ingredient recipes the player / AI can be dealt.
+# Secret 3-ingredient recipes the player / AI can be dealt (24 recipes).
+# Each uses 3 DIFFERENT ingredients from GAME_INGREDIENTS; many share ingredients on purpose,
+# so grabbing one item can both help you AND block the opponent.
 GAME_RECIPES = [
-    {"name": "Spaghetti Pomodoro", "ingredients": ("pasta", "tomato", "garlic")},
-    {"name": "Cheese Pizza",       "ingredients": ("flour", "tomato", "cheese")},
-    {"name": "Chicken Rice",       "ingredients": ("chicken", "rice", "water")},
-    {"name": "Beef Potato Plate",  "ingredients": ("beef", "potato", "garlic")},
-    {"name": "Mac and Cheese",     "ingredients": ("pasta", "milk", "cheese")},
-    {"name": "Omelette",           "ingredients": ("eggs", "cheese", "milk")},
-    {"name": "Fresh Dough",        "ingredients": ("flour", "water", "eggs")},
-    {"name": "Chicken Potato",     "ingredients": ("chicken", "potato", "garlic")},
+    {"name": "Spaghetti Pomodoro",  "ingredients": ("pasta", "tomato", "garlic")},
+    {"name": "Cheese Pizza",        "ingredients": ("flour", "tomato", "cheese")},
+    {"name": "Chicken Rice",        "ingredients": ("chicken", "rice", "water")},
+    {"name": "Beef Potato Plate",   "ingredients": ("beef", "potato", "garlic")},
+    {"name": "Mac and Cheese",      "ingredients": ("pasta", "milk", "cheese")},
+    {"name": "Omelette",            "ingredients": ("eggs", "cheese", "milk")},
+    {"name": "Fresh Dough",         "ingredients": ("flour", "water", "eggs")},
+    {"name": "Chicken Potato",      "ingredients": ("chicken", "potato", "garlic")},
+    {"name": "Pancakes",            "ingredients": ("flour", "milk", "eggs")},
+    {"name": "Shakshuka",           "ingredients": ("eggs", "tomato", "garlic")},
+    {"name": "Tomato Rice",         "ingredients": ("rice", "tomato", "garlic")},
+    {"name": "Beef Rice Bowl",      "ingredients": ("beef", "rice", "water")},
+    {"name": "Cheesy Potato Bake",  "ingredients": ("potato", "cheese", "milk")},
+    {"name": "Beef Pasta",          "ingredients": ("beef", "pasta", "tomato")},
+    {"name": "Chicken Pasta",       "ingredients": ("chicken", "pasta", "cheese")},
+    {"name": "Chicken Tomato Stew", "ingredients": ("chicken", "tomato", "garlic")},
+    {"name": "Cheesy Rice",         "ingredients": ("rice", "cheese", "milk")},
+    {"name": "Egg Fried Rice",      "ingredients": ("eggs", "rice", "garlic")},
+    {"name": "Mashed Potato",       "ingredients": ("potato", "milk", "garlic")},
+    {"name": "Egg Potato Salad",    "ingredients": ("eggs", "potato", "water")},
+    {"name": "Cheese Bread",        "ingredients": ("flour", "cheese", "water")},
+    {"name": "Beef Stew",           "ingredients": ("beef", "potato", "tomato")},
+    {"name": "Chicken Soup",        "ingredients": ("chicken", "water", "potato")},
+    {"name": "Cheese Pasta Bake",   "ingredients": ("pasta", "cheese", "tomato")},
 ]
 GAME_TABLE_SIZE = 8
 GAME_RECIPE_SIZE = 3
@@ -262,6 +280,12 @@ def validate_data():
         for i in g["ingredients"]:
             assert i in GAME_INGREDIENTS, f"Game recipe {g['name']}: '{i}' not in GAME_INGREDIENTS"
     assert len(GAME_INGREDIENTS) >= GAME_TABLE_SIZE
+    assert len(GAME_RECIPES) >= 20, f"Need many 3-ingredient game recipes, got {len(GAME_RECIPES)}"
+    assert len({g["name"] for g in GAME_RECIPES}) == len(GAME_RECIPES), "Duplicate game recipe name"
+    assert len({frozenset(g["ingredients"]) for g in GAME_RECIPES}) == len(GAME_RECIPES), \
+        "Duplicate game recipe (same 3 ingredients)"
+    for g in GAME_RECIPES:
+        assert len(set(g["ingredients"])) == GAME_RECIPE_SIZE, f"Game recipe {g['name']}: ingredients must be 3 different items"
 
     # edge case: ingredients that can form NO dish
     assert not _reachable_dishes(["water", "oil"]), "water+oil should not form any dish"
